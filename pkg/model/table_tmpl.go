@@ -67,7 +67,15 @@ func (t *{{$TableStructName}}) BatchGetBy{{$col.ColStructName}}(value ...{{$col.
 // With{{$col.ColStructName}} set Option with {{$col.ColName}} = value
 func (t *{{$TableStructName}}) With{{$col.ColStructName}}(value {{$col.ColStructType}}) Option {
 	return func(o *options) {
-		o.query["{{$col.ColName}}"] = value
+		var vs []{{$col.ColStructType}}
+		v, ok := o.query["{{$col.ColName}}"]
+		if !ok {
+			vs = make([]{{$col.ColStructType}}, 0, 2)
+		} else {
+			vs = v.([]{{$col.ColStructType}})
+		}
+		vs = append(vs, value)
+		o.query["{{$col.ColName}}"] = v
 	}
 }
 {{end}}
