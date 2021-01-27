@@ -75,7 +75,7 @@ func (t *{{$TableStructName}}) With{{$col.ColStructName}}(value {{$col.ColStruct
 			vs = v.([]{{$col.ColStructType}})
 		}
 		vs = append(vs, value)
-		o.query["{{$col.ColName}}"] = v
+		o.query["{{$col.ColName}}"] = vs
 	}
 }
 {{end}}
@@ -91,7 +91,14 @@ func (t *{{$TableStructName}}) Get(opts ...Option) ([]*{{$TableStructName}}, err
 	for _, opt := range opts {
 		opt(&o)
 	}
-	err := GetReadDB().Table(t.TableName()).Where(o.query).Scan(&res).Error
+
+	tx := GetReadDB().Table(t.TableName())
+
+	for key, value := range o.query {
+		tx = tx.Where(key + " IN ?", value)
+	}
+
+	err := tx.Scan(&res).Error
 	return res, err
 }
 
