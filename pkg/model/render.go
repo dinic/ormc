@@ -69,10 +69,12 @@ func (r *Renderer) Render() {
 	}
 
 	if err := exec.Command("goimports", "-l", "-w", r.file).Run(); err != nil {
-		log.Fatalf("auto import failed, file: %s, err: %s", r.file, err)
+		//	log.Fatalf("auto import failed, file: %s, err: %s", r.file, err)
+		log.Printf("auto import failed, file: %s, err: %s", r.file, err)
 	}
 
 	if err = exec.Command("gofmt", "-l", "-w", r.file).Run(); err != nil {
-		log.Fatalf("fmt file: %s failed, err: %s", r.file, err)
+		//log.Fatalf("fmt file: %s failed, err: %s", r.file, err)
+		log.Printf("fmt file: %s failed, err: %s", r.file, err)
 	}
 }
