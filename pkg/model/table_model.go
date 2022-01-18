@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/dinic/ormc/pkg/dbinfo"
@@ -33,7 +34,16 @@ func (tm *TableModel) fileName() string {
 func (tm *TableModel) renderImport(r *Renderer) {
 	imports := []string{"gorm.io/gorm"}
 
+	// make sure the output cols is keep in order
+	cols := make([]*dbinfo.Column, 0, len(tm.table.Cols))
 	for _, col := range tm.table.Cols {
+		cols = append(cols, col)
+	}
+	sort.Slice(cols, func(i, j int) bool {
+		return cols[i].ColumnName < cols[j].ColumnName
+	})
+
+	for _, col := range cols {
 		t := dbinfo.TypeMysql2Go(col.DataType)
 		if t == "" {
 			log.Fatalf("not found mysql type: %s", col.DataType)
