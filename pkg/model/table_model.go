@@ -135,7 +135,16 @@ func (tm *TableModel) renderTableDefine(r *Renderer) {
 	td.TableName = tm.table.TableName
 	td.TableStructName = tm.table.StructName()
 
+	// make sure the output cols is keep in order
+	cols := make([]*dbinfo.Column, 0, len(tm.table.Cols))
 	for _, col := range tm.table.Cols {
+		cols = append(cols, col)
+	}
+	sort.Slice(cols, func(i, j int) bool {
+		return cols[i].ColumnName < cols[j].ColumnName
+	})
+
+	for _, col := range cols {
 		cd := new(colDefine)
 		cd.ColName = col.ColumnName
 		cd.ColStructName = col.StructName()
